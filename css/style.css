@@ -16,8 +16,6 @@ body {
   font-size: 16px;
   line-height: 1.5;
   color: #202020;
-  background: radial-gradient(ellipse 80% 50% at 10% -10%, rgba(245, 215, 48, 0.22), transparent 55%), radial-gradient(ellipse 60% 40% at 100% 0%, rgba(233, 242, 195, 0.45), transparent 50%), #fefcef;
-  -webkit-font-smoothing: antialiased;
 }
 
 img {
