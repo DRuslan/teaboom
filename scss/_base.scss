@@ -1,0 +1,232 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: $font-main;
+  font-size: 16px;
+  line-height: 1.5;
+  color: $color-ink;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgb(245 215 48 / 0.22), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgb(127 255 0 / 0.08), transparent 50%),
+    $color-page;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+.page {
+  padding: 1.25rem 0 4rem;
+
+  &__container {
+    width: min(#{$container}, calc(100% - 2rem));
+    margin-inline: auto;
+  }
+}
+
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgb(254 252 239 / 0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgb(32 32 32 / 0.06);
+
+  &__inner {
+    width: min(#{$container}, calc(100% - 2rem));
+    margin-inline: auto;
+    padding-block: 0.75rem;
+  }
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: opacity 0.2s $ease-out;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  &__logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px $color-accent;
+  }
+
+  &__brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  &__name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  &__tagline {
+    font-size: 0.75rem;
+    color: $color-muted;
+  }
+}
+
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  animation: fade-up 0.55s $ease-out both;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.8125rem;
+    color: $color-muted;
+  }
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:not(:last-child)::after {
+      content: "/";
+      color: $color-line;
+    }
+
+    &--current {
+      color: $color-ink-soft;
+      font-weight: 600;
+    }
+  }
+
+  &__link {
+    transition: color 0.2s $ease-out;
+
+    &:hover,
+    &:focus-visible {
+      color: $color-ink;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+      border-radius: 2px;
+    }
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes price-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cart-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(0.96);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes cart-success {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-8deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
