@@ -174,8 +174,6 @@
         cartBtn.classList.remove(ADDED);
         if (cartText) cartText.textContent = "В корзину";
       }, 1600);
-
-      console.info(`[Teaboom] В корзину: Ананасовый улун, ${pkg?.weight || ""}`);
     });
   }
 
