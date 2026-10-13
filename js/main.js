@@ -1,19 +1,27 @@
 (() => {
   "use strict";
 
+  // Единый источник данных по ТЗ
+  const PACKAGES = {
+    "100": { weight: "100 г", sku: "01306", price: 326.4, oldPrice: 349.2 },
+    "500": { weight: "500 г", sku: "01307", price: 1432, oldPrice: 1646 },
+    "1000": { weight: "1000 г", sku: "01308", price: 2064, oldPrice: 2592 },
+    "5000": { weight: "5000 г", sku: "01309", price: 6320, oldPrice: 8710 },
+  };
+
   const root = document.querySelector("[data-product]");
   if (!root) return;
 
-  const options = [...root.querySelectorAll("[data-packaging-option]")];
+  const tabs = [...root.querySelectorAll("[data-packaging-option]")];
+  const tablist = root.querySelector('[role="tablist"]');
+  const panel = root.querySelector("#product-offer");
   const skuEl = root.querySelector("[data-sku]");
-  const priceEl = root.querySelector("[data-price]");
-  const oldPriceEl = root.querySelector("[data-old-price]");
-  const pricesWrap = root.querySelector("[data-prices]");
+  const priceEl = root.querySelector("[data-current-price]");
+  const oldPriceEl = root.querySelector("[data-current-old-price]");
   const skuWrap = root.querySelector(".product-card__sku");
   const badgeEl = root.querySelector("[data-discount-badge]");
   const metaSku = root.querySelector("[data-meta-sku]");
   const metaPrice = root.querySelector("[data-meta-price]");
-  const packagingList = root.querySelector(".product-card__packaging-list");
   const cartBtn = root.querySelector("[data-add-to-cart]");
   const cartText = root.querySelector("[data-cart-text]");
 
@@ -40,44 +48,38 @@
   const replayAnim = (el, className = "is-animating") => {
     if (!el) return;
     el.classList.remove(className);
-    // force reflow
     void el.offsetWidth;
     el.classList.add(className);
   };
 
-  const selectOption = (option) => {
-    if (!option || option.classList.contains(ACTIVE)) return;
+  const getPackage = (tab) => {
+    const key = tab?.dataset.weightKey;
+    return key ? PACKAGES[key] : null;
+  };
 
-    const { sku, price, oldPrice } = option.dataset;
-    const priceNum = Number(price);
-    const oldPriceNum = oldPrice ? Number(oldPrice) : null;
-    const discount = calcDiscount(priceNum, oldPriceNum);
+  /** Один блок цены: арт + цена + старая цена по выбранной граммовке */
+  const renderOffer = (pkg) => {
+    if (!pkg) return;
 
-    options.forEach((btn) => {
-      const isActive = btn === option;
-      btn.classList.toggle(ACTIVE, isActive);
-      btn.setAttribute("aria-selected", String(isActive));
-    });
+    const discount = calcDiscount(pkg.price, pkg.oldPrice);
 
-    if (packagingList) {
-      packagingList.setAttribute("aria-activedescendant", option.id);
-    }
-
-    if (skuEl) skuEl.textContent = sku;
-    if (metaSku) metaSku.setAttribute("content", sku);
-    if (metaPrice) metaPrice.setAttribute("content", String(priceNum));
+    if (skuEl) skuEl.textContent = pkg.sku;
+    if (metaSku) metaSku.setAttribute("content", pkg.sku);
+    if (metaPrice) metaPrice.setAttribute("content", String(pkg.price));
 
     if (priceEl) {
-      priceEl.textContent = formatPrice(priceNum);
+      priceEl.textContent = formatPrice(pkg.price);
       replayAnim(priceEl);
     }
 
     if (oldPriceEl) {
-      if (oldPriceNum && oldPriceNum > priceNum) {
-        oldPriceEl.textContent = formatPrice(oldPriceNum);
+      if (pkg.oldPrice > pkg.price) {
+        oldPriceEl.textContent = formatPrice(pkg.oldPrice);
+        oldPriceEl.hidden = false;
         oldPriceEl.classList.remove("is-hidden");
         replayAnim(oldPriceEl);
       } else {
+        oldPriceEl.hidden = true;
         oldPriceEl.classList.add("is-hidden");
       }
     }
@@ -85,9 +87,11 @@
     if (badgeEl) {
       if (discount > 0) {
         badgeEl.textContent = `−${discount}%`;
+        badgeEl.hidden = false;
         badgeEl.classList.remove("is-hidden");
         replayAnim(badgeEl, "is-animating");
       } else {
+        badgeEl.hidden = true;
         badgeEl.classList.add("is-hidden");
       }
     }
@@ -97,49 +101,70 @@
       window.setTimeout(() => skuWrap.classList.remove("is-updating"), 280);
     }
 
-    if (pricesWrap) {
-      pricesWrap.dataset.weight = option.dataset.weight || "";
-    }
+    root.dataset.activeWeight = pkg.weight;
   };
 
-  options.forEach((option) => {
-    option.addEventListener("click", () => selectOption(option));
+  const activateTab = (tab, { focus = false } = {}) => {
+    if (!tab) return;
+
+    const pkg = getPackage(tab);
+    if (!pkg) return;
+
+    tabs.forEach((btn) => {
+      const isActive = btn === tab;
+      btn.classList.toggle(ACTIVE, isActive);
+      btn.setAttribute("aria-selected", String(isActive));
+      btn.tabIndex = isActive ? 0 : -1;
+    });
+
+    if (panel) {
+      panel.setAttribute("aria-labelledby", tab.id);
+    }
+
+    renderOffer(pkg);
+
+    if (focus) tab.focus();
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => activateTab(tab));
   });
 
-  // Keyboard for listbox
-  if (packagingList) {
-    packagingList.addEventListener("keydown", (event) => {
-      const currentIndex = options.findIndex((o) => o.classList.contains(ACTIVE));
+  if (tablist) {
+    tablist.addEventListener("keydown", (event) => {
+      const currentIndex = tabs.findIndex((t) => t.classList.contains(ACTIVE));
       let nextIndex = currentIndex;
 
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-        nextIndex = (currentIndex + 1) % options.length;
-        event.preventDefault();
-      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-        nextIndex = (currentIndex - 1 + options.length) % options.length;
-        event.preventDefault();
-      } else if (event.key === "Home") {
-        nextIndex = 0;
-        event.preventDefault();
-      } else if (event.key === "End") {
-        nextIndex = options.length - 1;
-        event.preventDefault();
-      } else {
-        return;
+      switch (event.key) {
+        case "ArrowRight":
+        case "ArrowDown":
+          nextIndex = (currentIndex + 1) % tabs.length;
+          break;
+        case "ArrowLeft":
+        case "ArrowUp":
+          nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+          break;
+        case "Home":
+          nextIndex = 0;
+          break;
+        case "End":
+          nextIndex = tabs.length - 1;
+          break;
+        default:
+          return;
       }
 
-      options[nextIndex].focus();
-      selectOption(options[nextIndex]);
+      event.preventDefault();
+      activateTab(tabs[nextIndex], { focus: true });
     });
   }
 
-  // Fake add-to-cart feedback
   let cartTimer = null;
 
   if (cartBtn) {
     cartBtn.addEventListener("click", () => {
-      const active = options.find((o) => o.classList.contains(ACTIVE));
-      const weight = active?.dataset.weight || "";
+      const active = tabs.find((t) => t.classList.contains(ACTIVE));
+      const pkg = getPackage(active);
 
       cartBtn.classList.add(ADDED);
       if (cartText) cartText.textContent = "Добавлено";
@@ -150,8 +175,10 @@
         if (cartText) cartText.textContent = "В корзину";
       }, 1600);
 
-      // subtle console for demo / QA
-      console.info(`[Teaboom] В корзину: Ананасовый улун, ${weight}`);
+      console.info(`[Teaboom] В корзину: Ананасовый улун, ${pkg?.weight || ""}`);
     });
   }
+
+  const initial = tabs.find((t) => t.classList.contains(ACTIVE)) || tabs[0];
+  activateTab(initial);
 })();

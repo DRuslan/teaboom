@@ -262,11 +262,11 @@
     padding: 0.85rem 1.5rem;
     border-radius: $radius-pill;
     background: $color-cart;
-    color: $color-ink;
+    color: $color-cart-text;
     font-size: 1rem;
     font-weight: 800;
     letter-spacing: 0.01em;
-    box-shadow: 0 10px 24px rgb(127 255 0 / 0.35);
+    box-shadow: 0 8px 20px rgb(32 32 32 / 0.08);
     transition:
       background 0.25s $ease-out,
       color 0.25s $ease-out,

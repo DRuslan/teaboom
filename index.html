@@ -77,78 +77,76 @@
           <h1 class="product-card__title">Ананасовый улун</h1>
 
           <p class="product-card__sku">
-            арт.&nbsp;<span data-sku>01306</span>
+            арт. <span data-sku>01306</span>
           </p>
 
           <div class="product-card__packaging" data-packaging>
             <p class="product-card__packaging-label" id="packaging-label">Фасовка</p>
             <div
               class="product-card__packaging-list"
-              role="listbox"
+              role="tablist"
               aria-labelledby="packaging-label"
-              aria-activedescendant="packaging-100"
             >
               <button
                 type="button"
                 class="product-card__packaging-item product-card__packaging-item--active"
-                role="option"
+                role="tab"
                 id="packaging-100"
                 aria-selected="true"
+                aria-controls="product-offer"
+                tabindex="0"
                 data-packaging-option
-                data-weight="100 г"
-                data-sku="01306"
-                data-price="326.40"
-                data-old-price="349.20"
+                data-weight-key="100"
               >
-                100&nbsp;г
+                100 г
               </button>
               <button
                 type="button"
                 class="product-card__packaging-item"
-                role="option"
+                role="tab"
                 id="packaging-500"
                 aria-selected="false"
+                aria-controls="product-offer"
+                tabindex="-1"
                 data-packaging-option
-                data-weight="500 г"
-                data-sku="01307"
-                data-price="1432"
-                data-old-price="1646"
+                data-weight-key="500"
               >
-                500&nbsp;г
+                500 г
               </button>
               <button
                 type="button"
                 class="product-card__packaging-item"
-                role="option"
+                role="tab"
                 id="packaging-1000"
                 aria-selected="false"
+                aria-controls="product-offer"
+                tabindex="-1"
                 data-packaging-option
-                data-weight="1000 г"
-                data-sku="01308"
-                data-price="2064"
-                data-old-price="2592"
+                data-weight-key="1000"
               >
-                1000&nbsp;г
+                1000 г
               </button>
               <button
                 type="button"
                 class="product-card__packaging-item"
-                role="option"
+                role="tab"
                 id="packaging-5000"
                 aria-selected="false"
+                aria-controls="product-offer"
+                tabindex="-1"
                 data-packaging-option
-                data-weight="5000 г"
-                data-sku="01309"
-                data-price="6320"
-                data-old-price="8710"
+                data-weight-key="5000"
               >
-                5000&nbsp;г
+                5000 г
               </button>
             </div>
           </div>
 
           <div
             class="product-card__price-block"
+            id="product-offer"
+            role="tabpanel"
+            aria-labelledby="packaging-100"
             itemprop="offers"
             itemscope
             itemtype="https://schema.org/Offer"
@@ -158,8 +156,8 @@
             <meta itemprop="availability" content="https://schema.org/InStock">
 
             <div class="product-card__prices" data-prices>
-              <span class="product-card__price" data-price>326,40&nbsp;₽</span>
-              <span class="product-card__price-old" data-old-price>349,20&nbsp;₽</span>
+              <span class="product-card__price" data-current-price>326,40 ₽</span>
+              <span class="product-card__price-old" data-current-old-price>349,20 ₽</span>
             </div>
           </div>
 
